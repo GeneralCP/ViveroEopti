@@ -10,7 +10,7 @@ The addon itself is a RESTapi which runs in the background. So far the rest API 
 * /GRIDSetpoint, the calculated GRID setpoint for the current hour. This should then be forwarded to your battery system using an automation in Home Assistant (NodeRed for example)
 
 # Optimization principle
-Optimization is reached in a number of steps. The goal is to have the lowest possible cost based on a Solar PV forecast, a forecast of energy consumption and the dynamic tariffs gather from the ENTSO-E platform adjusted for your specific supplier. This is not a trading algorithm which means that the intended use is to have the most economic use of your own energy (PV and Battery storage) and when PV is insufficient, buy from the GRID at the most economic time. Excess PV is sold at the most economic time as well (within the possibilities of your system). 
+Optimization is reached in a number of steps. The goal is to have the lowest possible cost based on a Solar PV forecast, a forecast of energy consumption and the dynamic tariffs gathered from the ENTSO-E platform adjusted for your specific supplier. This is not a trading algorithm which means that the intended use is to have the most economic use of your own energy (PV and Battery storage) and when PV is insufficient, buy from the GRID at the most economic time. Excess PV is sold at the most economic time as well (within the possibilities of your system). 
 
 The steps used for optimizing are:
 
