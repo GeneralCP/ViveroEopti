@@ -23,3 +23,13 @@ The steps used for optimizing are:
 * based on a forecast of the prices of the day after tomorrow the battery is either left to discharge to a minimum SOC (because electricity will be cheaper the next day) or to a maximum SOC (because electricity is more expensive the next day)
 
 The output of the optimization is a table for the next 32 hours that lists all variables of the optimization. The most important variable is the GRID Setpoint which is used to determine if you should be feeding in or back from the GRID in a certain hour. This is based on the common 'GRID Setpoint' used in most ESS system (e.g. Victron).
+
+# Requirements
+
+* Home Assistant OS on a network within your home
+* Addons on Home Assistant: NodeRed, Influxdb
+* Required sensor input from Home Assistant: A sensor showing totall energy consumption of your house in Watts, A sensor for outside temperature of your house and a sensor showing SOC of the battery
+* Information about your PV system (watt peak, azimuth, declination etc.)
+* Entso-e API key (can be attained for free from contact with them)
+
+
