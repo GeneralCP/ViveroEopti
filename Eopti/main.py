@@ -8,7 +8,7 @@ from datetime import datetime,timedelta,date
 #Import configuration file
 config='json'
 if config=='json':
-    with open(".options.json") as stream:
+    with open("./options.json") as stream:
         try:
             config = json.load(stream)
             print(config)
