@@ -176,7 +176,7 @@
         "id": "89566edfbbfc9a8f",
         "type": "function",
         "z": "3872ce80a66f7019",
-        "name": "function 1",
+        "name": "set GRID",
         "func": "\nvar newmsg = {}\n\nnewmsg.payload = Math.round(Number(msg.payload.data.GridSetPoint))\n\nreturn newmsg",
         "outputs": 1,
         "noerr": 0,
@@ -187,8 +187,8 @@
         "y": 180,
         "wires": [
             [
-                "ec344f991b9995be",
-                "fb0d617f3eef8b57"
+                "fb0d617f3eef8b57",
+                "ec344f991b9995be"
             ]
         ]
     },
@@ -301,5 +301,39 @@
         "x": 270,
         "y": 100,
         "wires": []
+    },
+    {
+        "id": "b95ffdd0ac6aeefe",
+        "type": "catch",
+        "z": "3872ce80a66f7019",
+        "name": "",
+        "scope": null,
+        "uncaught": false,
+        "x": 780,
+        "y": 100,
+        "wires": [
+            [
+                "11fef94eeeaac6fe"
+            ]
+        ]
+    },
+    {
+        "id": "11fef94eeeaac6fe",
+        "type": "function",
+        "z": "3872ce80a66f7019",
+        "name": "set setpoint to 0",
+        "func": "\nvar newmsg = {}\n\nnewmsg.payload = 0.0\n\nreturn newmsg",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 960,
+        "y": 100,
+        "wires": [
+            [
+                "ec344f991b9995be"
+            ]
+        ]
     }
 ]
