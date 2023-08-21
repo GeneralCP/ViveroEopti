@@ -32,4 +32,8 @@ The output of the optimization is a table for the next 32 hours that lists all v
 * Information about your PV system (watt peak, azimuth, declination etc.)
 * Entso-e API key (can be attained for free from contact with them)
 
+# Installation
+
+* install addon from repo in home assistant. Repo to use 
+
 
