@@ -22,7 +22,6 @@ RUN pip install uvicorn
 
 
 # Install requirements for add-on
-COPY options.json options.json
 COPY functions.py functions.py
 COPY main.py main.py
 
