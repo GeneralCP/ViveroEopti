@@ -34,6 +34,27 @@ The output of the optimization is a table for the next 32 hours that lists all v
 
 # Installation
 
-* install addon from repo in home assistant. Repo to use 
+* To install add the E-opti Add-on repository in the Home Assistant store, follow these steps: https://www.home-assistant.io/common-tasks/os/#installing-third-party-add-ons
+This will be: Configuration > Add-ons & Backups open the add-on store > Add the URL of the repository and then press "Add".
+Look for the Vivero e-optimization Add-on tab and when inside the Add-on click on `install`.
+Be patient, the installation may take some time depending on your hardware.
+After installation set the configuration parameters before starting your addon. Addon/API should then be running on the http://{HA IP address}:8000
+
+* The addon can also be run stand-alone as a python application. This is not recommended since it will still require a connection to a Home assistant instance (to get the data from). To run the app stand-alone. Download the whole repository to a folder on the PC you would like to run the app on. Make sure python 3 and pip is installed. In the folder run "pip install -r requirements.txt" to install all required python modules. After this you can run "uvicorn main:app --host 0.0.0.0 --port 8000" from the same folder. It will start the application on the server. The API will be available at the IP address of the server
+
+* Install the NodeRed flow on your cerbo device's NodeRed installation make sure to change the IP address to the IP of your HA installation in the HTTP request nodes
+
+# Usage
+
+* Once the API is up and running (either as HA add-on or as a standalone API) the NodeRed flow in your cerbo will periodically:
+    * daily at 4 pm (once new day-ahead prices are known) it will recalculate the whole uptimization until the end of the next day
+    * hourly at 1 minute past the whole hour it will update the GRID setpoint in your ESS to the new required setpoint
+
+* To check if the API is running and what the output is, you can check either of the following endpoints
+    * http://{HA IP address}:8000 -> shows if the API is running
+    * http://{HA IP address}:8000/calculate -> runs the calculation again from the current time
+    * http://{HA IP address}:8000/plot1 -> shows .png showing the output of the optimization. This can also be used to set as a picture in your HA dashboard to check the optimization results
+    * http://{HA IP address}:8000/plot2 -> shows .png showing a graph with the predicted battery SOC
+
 
 
