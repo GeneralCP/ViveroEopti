@@ -1,6 +1,6 @@
 name: "vivero e-optimization"
 description: "eptimization addon which creates an optimal schedule for a battery system in the netherlands"
-version: "0.1.7"
+version: "0.1.8"
 slug: "e-opti"
 init: false
 arch:

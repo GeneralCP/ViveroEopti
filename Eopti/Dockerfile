@@ -25,6 +25,7 @@ RUN pip install uvicorn
 COPY functions.py functions.py
 COPY main.py main.py
 COPY options.json options.json
+COPY run.sh run.sh
 
 CMD ["/run.sh"]
 
