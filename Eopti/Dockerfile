@@ -26,6 +26,6 @@ COPY functions.py functions.py
 COPY main.py main.py
 COPY options.json options.json
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["/run.sh"]
 
 
