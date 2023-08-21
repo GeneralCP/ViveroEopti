@@ -21,19 +21,19 @@ map:
 #Home Assistant detials
 options:
   HA:
-    IP: '192.168.2.101'
+    IP: '192.168.1.100'
     port: '8123'
-    accesstoken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIzMWU1ZDI0MTEyNTQ0OTUwODEyODM2ZjdjNDU1Mjg5NiIsImlhdCI6MTY5MTkzMDkxMCwiZXhwIjoyMDA3MjkwOTEwfQ.B7dGzLBP_gpXjSp2dTzXzVt9QYVq3bTFQDUE_1w0A4I'
+    accesstoken: 'xxxxx'
 
   #solar forecast installation details
   PVinstallations:
-    - latitude: 52.194019
-      longitude: 4.431900
+    - latitude: 0.000000
+      longitude: 0.000000
       declination: 45
       azimuth: 80
       kwp: 3.75
-    - latitude: 52.194019
-      longitude: 4.431900
+    - latitude: 0.000000
+      longitude: 0.000000
       declination: 15
       azimuth: 80
       kwp: 3.0 
@@ -41,7 +41,7 @@ options:
   #battery (all values in kW or kWh)
   Battery:
     #max capacity of battery 
-    maxcapacity: 28.68
+    maxcapacity: 30.0
     #use lower than maximum if you want to limit your inverter. this is usually more efficient
     maxdischarge: 5.0
     maxcharge: 5.0
@@ -62,17 +62,17 @@ options:
     # opslag levering van energiemaatschappij per kWh
     delivery_cost: 0.02178
     feedback_rebate: 0.01089
-    # BTW percentage (decimaal)
+    # BTW percentage (decimal)
     btw: 0.21
-    # Salderingspercentage (decimaal)
+    # Salderingspercentage (decimal)
     saldering_percentage: 1.0
     # Entso-e country code (for getting prices)
     country_code: 'NL'
     # Entso-e API key
-    api_key: 'd1262863-8b42-44fc-8335-311e560ff9d4'
+    api_key: 'xxxxx'
     # Entso-e used timezone (as pandas timestamp timezone, list at: https://gist.github.com/heyalexej/8bf688fd67d7199be4a1682b3eec7568)
     tz: 'Europe/Amsterdam'
-    # percentage loss of one way battery trip in decimals
+    # percentage loss of one way battery trip in decimals (this increases cost above eta. Only use if you want to cost in the write-off of your battery as well. This will decrease battery use significantly at any cost)
     bat_loss: 0.00
 
   #energy prediction
@@ -80,10 +80,10 @@ options:
     energy_demand_sensor: 'inverter_output_total'
     outside_temperature_sensor: 'openweathermap_temperature'
     timezone: 'Europe/Amsterdam'
-    influxdb_ip: '192.168.2.101'
+    influxdb_ip: '192.168.1.1000'
     influxdb_port: 8086
-    influxdb_username: 'peter'
-    influxdb_password: 'Lion_1286'
+    influxdb_username: 'username'
+    influxdb_password: 'password'
     influxdb_database: 'homeassistant'
 
   #holiday used in energy prediction exogenous variables
@@ -100,7 +100,7 @@ options:
   TempForecast:
     lat: 52.194019
     lon: 4.431900
-    appid: '143f436ab3c6b1ef0c0353cfd7a72a2e'
+    appid: 'openweathermap app id'
 
   #optimization options
 
@@ -110,7 +110,7 @@ options:
     gridoutmax: 15.0
 
     #GRID slack. This percentage of the daily load is allowed to be taken from the GRID instead of solar. Set this to 100.0 to allow unlimited GRID usage. If this is set to 0. Model will only take from GRID when solar or battery is insufficient
-    GRIDSlack: 0.01
+    GRIDSlack: 0.005
     #SOC slack. When optimization is run with fixSOC option. This option allows some slack. Settings this to 0.1 allows end SOC to be 10% lower or higher. lower than 0.1 not advisable
     SOCSlack: 0.0
     #MIN ending SOC. Prevents SOC going below this state at the end of optimization run. Is ignored when option smartSOC is used
