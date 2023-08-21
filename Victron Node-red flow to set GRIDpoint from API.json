@@ -1,0 +1,305 @@
+[
+    {
+        "id": "3872ce80a66f7019",
+        "type": "tab",
+        "label": "E-optimization",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "7e4cd656.31676",
+        "type": "inject",
+        "z": "3872ce80a66f7019",
+        "name": "Every Second",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "60",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 140,
+        "y": 180,
+        "wires": [
+            [
+                "d9dc9f17.84ef68"
+            ]
+        ]
+    },
+    {
+        "id": "8183d8ac.01c1e",
+        "type": "rbe",
+        "z": "3872ce80a66f7019",
+        "name": "",
+        "func": "rbe",
+        "gap": "",
+        "start": "",
+        "inout": "out",
+        "property": "payload",
+        "x": 470,
+        "y": 180,
+        "wires": [
+            [
+                "bf24d040a2f15ad8"
+            ]
+        ]
+    },
+    {
+        "id": "d9dc9f17.84ef68",
+        "type": "function",
+        "z": "3872ce80a66f7019",
+        "name": "Get Hour",
+        "func": "function gethour() {\n var date = new Date();\n var hour = (\"0\"+date.getHours()).substr(-2);\n return hour;\n}\n\nvar hour = gethour();\n\nreturn { payload : hour };",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 320,
+        "y": 180,
+        "wires": [
+            [
+                "8183d8ac.01c1e"
+            ]
+        ]
+    },
+    {
+        "id": "bf24d040a2f15ad8",
+        "type": "delay",
+        "z": "3872ce80a66f7019",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "1",
+        "timeoutUnits": "minutes",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 620,
+        "y": 180,
+        "wires": [
+            [
+                "067160cf546c9a28"
+            ]
+        ]
+    },
+    {
+        "id": "067160cf546c9a28",
+        "type": "http request",
+        "z": "3872ce80a66f7019",
+        "name": "",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "http://localhost:8000/GRIDSetpoint",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 790,
+        "y": 180,
+        "wires": [
+            [
+                "89566edfbbfc9a8f"
+            ]
+        ]
+    },
+    {
+        "id": "f5fe0dc29250ae31",
+        "type": "http request",
+        "z": "3872ce80a66f7019",
+        "name": "",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "http://192.168.2.101:8000/GRIDSetpoint",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 350,
+        "y": 240,
+        "wires": [
+            [
+                "89566edfbbfc9a8f"
+            ]
+        ]
+    },
+    {
+        "id": "d0ff6f162c0480ab",
+        "type": "inject",
+        "z": "3872ce80a66f7019",
+        "name": "Manual",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": "5",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 110,
+        "y": 240,
+        "wires": [
+            [
+                "f5fe0dc29250ae31"
+            ]
+        ]
+    },
+    {
+        "id": "89566edfbbfc9a8f",
+        "type": "function",
+        "z": "3872ce80a66f7019",
+        "name": "function 1",
+        "func": "\nvar newmsg = {}\n\nnewmsg.payload = Math.round(Number(msg.payload.data.GridSetPoint))\n\nreturn newmsg",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 960,
+        "y": 180,
+        "wires": [
+            [
+                "ec344f991b9995be",
+                "fb0d617f3eef8b57"
+            ]
+        ]
+    },
+    {
+        "id": "80a8fd379bd0995d",
+        "type": "inject",
+        "z": "3872ce80a66f7019",
+        "name": "Every day at 4pm",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "00 16 * * *",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 150,
+        "y": 360,
+        "wires": [
+            [
+                "325cc6daf9031198"
+            ]
+        ]
+    },
+    {
+        "id": "ce44ce6cb2385736",
+        "type": "comment",
+        "z": "3872ce80a66f7019",
+        "name": "Every day at 4 redo calculation",
+        "info": "",
+        "x": 170,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "325cc6daf9031198",
+        "type": "http request",
+        "z": "3872ce80a66f7019",
+        "name": "",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "http://192.168.2.101:8000/calculate",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 390,
+        "y": 360,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ec344f991b9995be",
+        "type": "victron-output-ess",
+        "z": "3872ce80a66f7019",
+        "service": "com.victronenergy.settings",
+        "path": "/Settings/CGwacs/AcPowerSetPoint",
+        "serviceObj": {
+            "service": "com.victronenergy.settings",
+            "name": "Venus settings"
+        },
+        "pathObj": {
+            "path": "/Settings/CGwacs/AcPowerSetPoint",
+            "type": "integer",
+            "name": "Grid set-point (W)",
+            "writable": true
+        },
+        "name": "",
+        "onlyChanges": false,
+        "x": 1200,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "fb0d617f3eef8b57",
+        "type": "debug",
+        "z": "3872ce80a66f7019",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1120,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "935b5a87197dc864",
+        "type": "comment",
+        "z": "3872ce80a66f7019",
+        "name": "Make sure to set HA IP address in all http request nodes!!!!",
+        "info": "",
+        "x": 270,
+        "y": 100,
+        "wires": []
+    }
+]
