@@ -65,8 +65,8 @@
     }
   ],
   "TempForecast": {
-    "lat": 52.194019,
-    "lon": 4.4319,
+    "lat": 0.000000,
+    "lon": 0.000000,
     "appid": "Open Weathermap appid"
   },
   "Optimization": {
