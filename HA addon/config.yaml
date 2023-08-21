@@ -1,0 +1,122 @@
+name: "vivero e-optimization"
+description: "eptimization addon which creates an optimal schedule for a battery system in the netherlands"
+version: "0.1.1"
+slug: "e-opti"
+init: false
+arch:
+  - aarch64
+  - amd64
+  - armhf
+  - armv7
+  - i386
+startup: services
+ports:
+  8000/tcp: 8000
+
+webui: http://[HOST]:[PORT:8000]
+map:
+  - config:rw
+  - share:rw
+
+#Home Assistant detials
+options:
+  HA:
+    IP: '192.168.2.101'
+    port: '8123'
+    accesstoken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIzMWU1ZDI0MTEyNTQ0OTUwODEyODM2ZjdjNDU1Mjg5NiIsImlhdCI6MTY5MTkzMDkxMCwiZXhwIjoyMDA3MjkwOTEwfQ.B7dGzLBP_gpXjSp2dTzXzVt9QYVq3bTFQDUE_1w0A4I'
+
+  #solar forecast installation details
+  PVinstallations:
+    - latitude: 52.194019
+      longitude: 4.431900
+      declination: 45
+      azimuth: 80
+      kwp: 3.75
+    - latitude: 52.194019
+      longitude: 4.431900
+      declination: 15
+      azimuth: 80
+      kwp: 3.0 
+
+  #battery (all values in kW or kWh)
+  Battery:
+    #max capacity of battery 
+    maxcapacity: 28.68
+    #use lower than maximum if you want to limit your inverter. this is usually more efficient
+    maxdischarge: 5.0
+    maxcharge: 5.0
+    #max and min SOC you want to use for optimization. OPtimization will never go above or below this SOC
+    minSOC: 0.1
+    maxSOC: 1.0
+    #charge and discharge efficiency for the battery. 
+    eta: 0.92
+    #entity id for getting SOC in HA
+    entity_id: 'victron_battery_soc_223'
+
+
+
+  #costs
+  Costs:
+    # energiebelasting stroom incl. BTW per kWh
+    energy_tax: 0.152448
+    # opslag levering van energiemaatschappij per kWh
+    delivery_cost: 0.02178
+    feedback_rebate: 0.01089
+    # BTW percentage (decimaal)
+    btw: 0.21
+    # Salderingspercentage (decimaal)
+    saldering_percentage: 1.0
+    # Entso-e country code (for getting prices)
+    country_code: 'NL'
+    # Entso-e API key
+    api_key: 'd1262863-8b42-44fc-8335-311e560ff9d4'
+    # Entso-e used timezone (as pandas timestamp timezone, list at: https://gist.github.com/heyalexej/8bf688fd67d7199be4a1682b3eec7568)
+    tz: 'Europe/Amsterdam'
+    # percentage loss of one way battery trip in decimals
+    bat_loss: 0.00
+
+  #energy prediction
+  Eprediction:
+    energy_demand_sensor: 'inverter_output_total'
+    outside_temperature_sensor: 'openweathermap_temperature'
+    timezone: 'Europe/Amsterdam'
+    influxdb_ip: '192.168.2.101'
+    influxdb_port: 8086
+    influxdb_username: 'peter'
+    influxdb_password: 'Lion_1286'
+    influxdb_database: 'homeassistant'
+
+  #holiday used in energy prediction exogenous variables
+  Holiday:
+    - start: '2023/07/08'
+      end: '2023/07/29'
+    - start: '2023/05/18'
+      end: '2023/05/21'
+    - start: '2023/05/26'
+      end: '2023/05/29'    
+
+
+  #temp forecast
+  TempForecast:
+    lat: 52.194019
+    lon: 4.431900
+    appid: '143f436ab3c6b1ef0c0353cfd7a72a2e'
+
+  #optimization options
+
+  Optimization:
+    #max feed in or feedback to/from GRID
+    gridinmax: 15.0
+    gridoutmax: 15.0
+
+    #GRID slack. This percentage of the daily load is allowed to be taken from the GRID instead of solar. Set this to 100.0 to allow unlimited GRID usage. If this is set to 0. Model will only take from GRID when solar or battery is insufficient
+    GRIDSlack: 0.01
+    #SOC slack. When optimization is run with fixSOC option. This option allows some slack. Settings this to 0.1 allows end SOC to be 10% lower or higher. lower than 0.1 not advisable
+    SOCSlack: 0.0
+    #MIN ending SOC. Prevents SOC going below this state at the end of optimization run. Is ignored when option smartSOC is used
+    MinEndSOC: 0.95
+    #Smart endSOC. if forecast dynamic prices are higher for the day after tomorrow. use HighSOC else use LOWSOC.
+    HighSOC: 0.9
+    LowSOC: 0.25
+
+
