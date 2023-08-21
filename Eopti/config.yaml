@@ -23,17 +23,17 @@ options:
   HA:
     IP: '192.168.2.101'
     port: '8123'
-    accesstoken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIzMWU1ZDI0MTEyNTQ0OTUwODEyODM2ZjdjNDU1Mjg5NiIsImlhdCI6MTY5MTkzMDkxMCwiZXhwIjoyMDA3MjkwOTEwfQ.B7dGzLBP_gpXjSp2dTzXzVt9QYVq3bTFQDUE_1w0A4I'
+    accesstoken: 'xxx'
 
   #solar forecast installation details
   PVinstallations:
-    - latitude: 52.194019
-      longitude: 4.431900
+    - latitude: 0.000000
+      longitude: 0.000000
       declination: 45
       azimuth: 80
       kwp: 3.75
-    - latitude: 52.194019
-      longitude: 4.431900
+    - latitude: 0.000000
+      longitude: 0.000000
       declination: 15
       azimuth: 80
       kwp: 3.0 
@@ -69,7 +69,7 @@ options:
     # Entso-e country code (for getting prices)
     country_code: 'NL'
     # Entso-e API key
-    api_key: 'd1262863-8b42-44fc-8335-311e560ff9d4'
+    api_key: 'xxx'
     # Entso-e used timezone (as pandas timestamp timezone, list at: https://gist.github.com/heyalexej/8bf688fd67d7199be4a1682b3eec7568)
     tz: 'Europe/Amsterdam'
     # percentage loss of one way battery trip in decimals (this increases cost above eta. Only use if you want to cost in the write-off of your battery as well. This will decrease battery use significantly at any cost)
@@ -82,8 +82,8 @@ options:
     timezone: 'Europe/Amsterdam'
     influxdb_ip: '192.168.2.101'
     influxdb_port: 8086
-    influxdb_username: 'peter'
-    influxdb_password: 'Lion_1286'
+    influxdb_username: 'username'
+    influxdb_password: 'password'
     influxdb_database: 'homeassistant'
 
   #holiday used in energy prediction exogenous variables
@@ -100,7 +100,7 @@ options:
   TempForecast:
     lat: 52.194019
     lon: 4.431900
-    appid: '143f436ab3c6b1ef0c0353cfd7a72a2e'
+    appid: 'openweathermap app id'
 
   #optimization options
 
