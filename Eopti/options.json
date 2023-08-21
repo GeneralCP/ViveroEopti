@@ -1,0 +1,81 @@
+{
+  "HA": {
+    "IP": "192.168.2.101",
+    "port": "8123",
+    "accesstoken": "xxx"
+  },
+  "PVinstallations": [
+    {
+      "latitude": 0.000000,
+      "longitude": 0.000000,
+      "declination": 45,
+      "azimuth": 80,
+      "kwp": 3.75
+    },
+    {
+      "latitude": 0.000000,
+      "longitude": 0.000000,
+      "declination": 15,
+      "azimuth": 80,
+      "kwp": 3
+    }
+  ],
+  "Battery": {
+    "maxcapacity": 28.68,
+    "maxdischarge": 5,
+    "maxcharge": 5,
+    "minSOC": 0.1,
+    "maxSOC": 1,
+    "eta": 0.92,
+    "entity_id": "victron_battery_soc_223"
+  },
+  "Costs": {
+    "energy_tax": 0.152448,
+    "delivery_cost": 0.02178,
+    "feedback_rebate": 0.01089,
+    "btw": 0.21,
+    "saldering_percentage": 1,
+    "country_code": "NL",
+    "api_key": "xxxx",
+    "tz": "Europe/Amsterdam",
+    "bat_loss": 0
+  },
+  "Eprediction": {
+    "energy_demand_sensor": "inverter_output_total",
+    "outside_temperature_sensor": "openweathermap_temperature",
+    "timezone": "Europe/Amsterdam",
+    "influxdb_ip": "192.168.2.101",
+    "influxdb_port": 8086,
+    "influxdb_username": "username",
+    "influxdb_password": "password",
+    "influxdb_database": "homeassistant"
+  },
+  "Holiday": [
+    {
+      "start": "2023/07/08",
+      "end": "2023/07/29"
+    },
+    {
+      "start": "2023/05/18",
+      "end": "2023/05/21"
+    },
+    {
+      "start": "2023/05/26",
+      "end": "2023/05/29"
+    }
+  ],
+  "TempForecast": {
+    "lat": 52.194019,
+    "lon": 4.4319,
+    "appid": "Open Weathermap appid"
+  },
+  "Optimization": {
+    "gridinmax": 15.0,
+    "gridoutmax": 15.0,
+    "GRIDSlack": 0.005,
+    "SOCSlack": 0.0,
+    "MinEndSOC": 0.95,
+    "HighSOC": 0.9,
+    "LowSOC": 0.25
+  }
+}
