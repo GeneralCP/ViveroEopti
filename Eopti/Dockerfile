@@ -24,6 +24,7 @@ RUN pip install uvicorn
 # Install requirements for add-on
 COPY functions.py functions.py
 COPY main.py main.py
+COPY options.json options.json
 
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
 
