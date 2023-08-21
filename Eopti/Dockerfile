@@ -1,7 +1,6 @@
 FROM python:3.11.4-bookworm
 
-WORKDIR /app
-COPY requirements.txt requirements.txt
+COPY requirements.txt /
 
 RUN pip install entsoe_py
 RUN pip install fastapi
@@ -22,10 +21,11 @@ RUN pip install uvicorn
 
 
 # Install requirements for add-on
-COPY functions.py functions.py
-COPY main.py main.py
-COPY options.json options.json
-COPY run.sh run.sh
+COPY functions.py /
+COPY main.py /
+COPY options.json /
+COPY run.sh /
+RUN chmod a+x /run.sh
 
 CMD ["/run.sh"]
 
