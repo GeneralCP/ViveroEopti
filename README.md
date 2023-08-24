@@ -55,8 +55,36 @@ After installation set the configuration parameters before starting your addon. 
 * To check if the API is running and what the output is, you can check either of the following endpoints
     * http://{HA IP address}:8000 -> shows if the API is running
     * http://{HA IP address}:8000/calculate -> runs the calculation again from the current time
-    * http://{HA IP address}:8000/plot1 -> shows .png showing the output of the optimization. This can also be used to set as a picture in your HA dashboard to check the optimization results
-    * http://{HA IP address}:8000/plot2 -> shows .png showing a graph with the predicted battery SOC
+    * http://{HA IP address}:8000/plot/1 -> shows .png showing the output of the optimization. This can also be used to set as a picture in your HA dashboard to check the optimization results
+    * http://{HA IP address}:8000/plot/2 -> shows .png showing a graph with the predicted battery SOC
+    * http://{HA IP address}:8000/GRIDSetpoint -> get GRID setpoint for current hour to supply to your battery system (used in NodeRed flow for Victron)
+    * http://{HA IP address}:8000/forecast/{entity} -> used to get reply of forecasted values for a certain entity. This endpoint can be used to create a sensor in HA that can be shown in an APEX charts graph. Available entities:
+         * PVForecast
+         * CostPurchase
+         * CostFeedback
+         * CostBatIn
+         * CostBatOut
+         * Eforecast
+         * PGridIn
+         * PGridOut
+         * PBattIn
+         * PBattOut
+         * GridSetpoint
+         * Balance
+         * SOC
+         * SOCkWH
+         * hour
+         * Cost -> optimized cost prediction
+         * CumCost
+         * UnoptimizedCost
+         * CumUnoptimizedCost
+    * http://{HA IP address}:8000/actuals/{entity} -> retries actuals since start of optimization and fills the entities. Returns JSON with selected entity. Available entities:
+         *  Consumption
+         * PVreal
+         * GRID
+         * SOCact
+         * CostReal
+         * CostRealCum
 
 
 
