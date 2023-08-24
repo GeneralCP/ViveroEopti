@@ -1,6 +1,6 @@
-name: "vivero e-optimization"
-description: "eptimization addon which creates an optimal schedule for a battery system in the netherlands"
-version: "0.1.12"
+name: "Vivero E-optimization"
+description: "addon which supplies several API endpoints for optimizing and monitoring a home battery PV system in the Netherlands"
+version: "0.1.15"
 slug: "e-opti"
 init: false
 arch:
@@ -118,5 +118,118 @@ options:
     #Smart endSOC. if forecast dynamic prices are higher for the day after tomorrow. use HighSOC else use LOWSOC.
     HighSOC: 0.9
     LowSOC: 0.25
+  
+  #sensors used to fill realized historical values during optimization window
+  #only fill when you want to compare the forecast to realized values. e.g. compare energy forecast with real consumption in home assistant. 
+  Sensors:
+    SOC: 'victron_battery_soc_223'
+    PV: 'solaredge_ac_power'
+    Consumption: 'inverter_output_total'
+    GRID: 'grid_total_power'
 
+schema:
+  HA:
+    IP: str
+    port: str
+    accesstoken: str
+
+  #solar forecast installation details
+  PVinstallations:
+    - latitude: float
+      longitude: float
+      declination: int
+      azimuth: int
+      kwp: float
+    - latitude: float
+      longitude: float
+      declination: int
+      azimuth: int
+      kwp: float
+
+  #battery (all values in kW or kWh)
+  Battery:
+    #max capacity of battery 
+    maxcapacity: float
+    #use lower than maximum if you want to limit your inverter. this is usually more efficient
+    maxdischarge: float
+    maxcharge: float
+    #max and min SOC you want to use for optimization. OPtimization will never go above or below this SOC
+    minSOC: float
+    maxSOC: float
+    #charge and discharge efficiency for the battery. 
+    eta: float
+    #entity id for getting SOC in HA
+    entity_id: str
+
+
+
+  #costs
+  Costs:
+    # energiebelasting stroom incl. BTW per kWh
+    energy_tax: float
+    # opslag levering van energiemaatschappij per kWh
+    delivery_cost: float
+    feedback_rebate: float
+    # BTW percentage (decimaal)
+    btw: float
+    # Salderingspercentage (decimaal)
+    saldering_percentage: float
+    # Entso-e country code (for getting prices)
+    country_code: str
+    # Entso-e API key
+    api_key: str
+    # Entso-e used timezone (as pandas timestamp timezone, list at: https://gist.github.com/heyalexej/8bf688fd67d7199be4a1682b3eec7568)
+    tz: str
+    # percentage loss of one way battery trip in decimals (this increases cost above eta. Only use if you want to cost in the write-off of your battery as well. This will decrease battery use significantly at any cost)
+    bat_loss: float
+
+  #energy prediction
+  Eprediction:
+    energy_demand_sensor: str
+    outside_temperature_sensor: str
+    timezone: str
+    influxdb_ip: str
+    influxdb_port: int
+    influxdb_username: str
+    influxdb_password: str
+    influxdb_database: str
+
+  #holiday used in energy prediction exogenous variables
+  Holiday:
+    - start: str
+      end: str
+    - start: str
+      end: str
+    - start: str
+      end: str    
+
+
+  #temp forecast
+  TempForecast:
+    lat: float
+    lon: float
+    appid: str
+
+  #optimization options
+
+  Optimization:
+    #max feed in or feedback to/from GRID
+    gridinmax: float
+    gridoutmax: float
+
+    #GRID slack. This percentage of the daily load is allowed to be taken from the GRID instead of solar. Set this to 100.0 to allow unlimited GRID usage. If this is set to 0. Model will only take from GRID when solar or battery is insufficient
+    GRIDSlack: float
+    #SOC slack. When optimization is run with fixSOC option. This option allows some slack. Settings this to 0.1 allows end SOC to be 10% lower or higher. lower than 0.1 not advisable
+    SOCSlack: float
+    #MIN ending SOC. Prevents SOC going below this state at the end of optimization run. Is ignored when option smartSOC is used
+    MinEndSOC: float
+    #Smart endSOC. if forecast dynamic prices are higher for the day after tomorrow. use HighSOC else use LOWSOC.
+    HighSOC: float
+    LowSOC: float
+
+  Sensors:
+    SOC: str
+    PV: str
+    Consumption: str
+    GRID: str
 

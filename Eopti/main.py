@@ -4,16 +4,16 @@ from functions import Eoptimization
 import uvicorn
 import yaml, json
 from datetime import datetime,timedelta,date
+import pandas as pd
 
 #Import configuration file
 config='json'
 if config=='json':
-    with open("/data/options.json") as stream:
-        try:
-            config = json.load(stream)
-            print(config)
-        except ValueError:
-            print('Loading JSON has failed')
+    try:
+        file=open('data/options.json')
+        config = json.load(file)
+    except ValueError:
+        print('Loading JSON has failed')
 
 else:
     with open("config.yaml", "r") as stream:
@@ -32,7 +32,7 @@ def root():
     ]
 
 @app.get("/calculate")
-def root():
+def calculate():
     try:
         Eopti.loadPVForecast()
     except:
@@ -80,32 +80,43 @@ def root():
     
     return Response(Eopti.Optimization.to_json(orient="index"), media_type="application/json")
 
-@app.get("/plot1")
-def root():
+@app.get("/plot/{number}")
+def plot(number):
     try:
-        buf=Eopti.plotOptimization(plot=1)
-    except:
-        return {"status": "Error trying to greate dataframe from previous input"} 
-    
-    return StreamingResponse(buf, media_type="image/png")
-
-@app.get("/plot2")
-def root():
-    try:
-        buf=Eopti.plotOptimization(plot=2)
+        buf=Eopti.plotOptimization(plot=int(number))
     except:
         return {"status": "Error trying to greate dataframe from previous input"} 
     
     return StreamingResponse(buf, media_type="image/png")
 
 @app.get("/GRIDSetpoint")
-def root():
+def gridsetpoint():
     if len(Eopti.Optimization.index)>0:
         df=Eopti.Optimization
         df=df[(df.index.date == date.today()) & (df.index.hour == datetime.now().hour) ]
-        print(df)
         return {"status": "success", "data": {'GridSetPoint': df['GridSetPoint'].values[0]*1000.0},"message": "null"}
+
+@app.get("/forecast/{entity}")
+def forecast(entity):
+    df=Eopti.Optimization
+    df=df[[entity]]
+    data=[]
+    for index, row in df.iterrows():
+        data.append({'time': index, entity: row[entity]})
+    return {"status": "success", "data": data,"message": "null"}
+
+@app.get("/actuals/{entity}")
+def actuals(entity):
+    Eopti.getActuals()
+    df=Eopti.Optimization
+    df=df[[entity]]
+    data=[]
+    for index, row in df.iterrows():
+        data.append({'time': index, entity: row[entity]})
+    return {"status": "success", "data": data,"message": "null"}  
+
+
                 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8000)

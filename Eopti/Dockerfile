@@ -1,30 +1,33 @@
-FROM python:3.11.4-bookworm
+ARG BUILD_FROM
+FROM ${BUILD_FROM}
 
-WORKDIR /data
-COPY requirements.txt /
 
-RUN pip install entsoe_py
-RUN pip install fastapi
-RUN pip install influxdb
-RUN pip install lightgbm
-RUN pip install matplotlib
-RUN pip install mip
-RUN pip install numpy
-RUN pip install pandas
-RUN pip install pytz
-RUN pip install PyYAML
-RUN pip install requests
-RUN pip install scikit_learn
-RUN pip install seaborn
-RUN pip install skforecast
-RUN pip install statsmodels
-RUN pip install uvicorn
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        python3 \
+        python3-pip
+
+RUN pip install entsoe_py --break-system-packages
+RUN pip install fastapi --break-system-packages
+RUN pip install influxdb --break-system-packages
+RUN pip install lightgbm --break-system-packages
+RUN pip install matplotlib --break-system-packages
+RUN pip install mip --break-system-packages
+RUN pip install numpy --break-system-packages
+RUN pip install pandas --break-system-packages
+RUN pip install pytz --break-system-packages
+RUN pip install PyYAML --break-system-packages
+RUN pip install requests --break-system-packages
+RUN pip install scikit_learn --break-system-packages
+RUN pip install seaborn --break-system-packages
+RUN pip install skforecast --break-system-packages
+RUN pip install statsmodels --break-system-packages
+RUN pip install uvicorn --break-system-packages
 
 
 # Install requirements for add-on
 COPY functions.py /
 COPY main.py /
-COPY options.json /
 COPY run.sh /
 RUN chmod a+x /run.sh
 
