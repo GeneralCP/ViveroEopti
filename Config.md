@@ -68,3 +68,11 @@ SOCSlack: When optimization is run with fixSOC option. This option allows some s
 MinEndSOC: MIN ending SOC. Prevents SOC going below this state at the end of optimization run. Is ignored when option smartSOC is used
 HighSOC:  Smart endSOC. if forecast dynamic prices are higher for the day after tomorrow. use HighSOC else use LOWSOC.
 LowSOC: Smart endSOC. if forecast dynamic prices are higher for the day after tomorrow. use HighSOC else use LOWSOC.
+
+#Sensors
+The sensors are used for the actuals endpoint. Data is retrieved from HA via influxdb
+
+SOC: SOC sensor
+PV: ac power sensor of PV installation
+Consumption: sensor which shows total consumption of the house
+GRID: sensor showing GRID point
