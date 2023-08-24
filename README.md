@@ -40,6 +40,8 @@ Look for the Vivero e-optimization Add-on tab and when inside the Add-on click o
 Be patient, the installation may take some time depending on your hardware.
 After installation set the configuration parameters before starting your addon. Addon/API should then be running on the http://{HA IP address}:8000
 
+* Make sure to specify configuration parameters in your addon. See the config.md file for a description of all the variables. 
+
 * The addon can also be run stand-alone as a python application. This is not recommended since it will still require a connection to a Home assistant instance (to get the data from). To run the app stand-alone. Download the whole repository to a folder on the PC you would like to run the app on. Make sure python 3 and pip is installed. In the folder run "pip install -r requirements.txt" to install all required python modules. After this you can run "uvicorn main:app --host 0.0.0.0 --port 8000" from the same folder. It will start the application on the server. The API will be available at the IP address of the server
 
 * Install the NodeRed flow on your cerbo device's NodeRed installation make sure to change the IP address to the IP of your HA installation in the HTTP request nodes
