@@ -54,12 +54,12 @@ list each holiday seperately
 start: start of holiday in 'YYYY/MM/DD'
 end: end of holiday in same format
 
-#TempForecast
+# TempForecast
 lat: latitude of your home location
 lon: longitude of your home location
 appid: openweathermap appid. link(https://openweathermap.org/appid)
 
-#Optimization
+# Optimization
 
 gridinmax: maximum amount in kW that can be taken from GRID
 gridoutmat: maximum amount in kW that can be supplied to GRID
@@ -69,7 +69,7 @@ MinEndSOC: MIN ending SOC. Prevents SOC going below this state at the end of opt
 HighSOC:  Smart endSOC. if forecast dynamic prices are higher for the day after tomorrow. use HighSOC else use LOWSOC.
 LowSOC: Smart endSOC. if forecast dynamic prices are higher for the day after tomorrow. use HighSOC else use LOWSOC.
 
-#Sensors
+# Sensors
 The sensors are used for the actuals endpoint. Data is retrieved from HA via influxdb
 
 SOC: SOC sensor
