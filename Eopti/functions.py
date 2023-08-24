@@ -593,7 +593,7 @@ class Eoptimization:
         self.Optimization['GRID']= self.Optimization['GRID'].fillna(0.0) 
         self.Optimization['SOCact']= self.Optimization['SOCact'].fillna(0.0) 
         self.Optimization['CostReal']=np.where(self.Optimization['GRID']>0.0, self.Optimization['CostPurchase']*self.Optimization['GRID'], self.Optimization['CostFeedback']*self.Optimization['GRID'])
-        self.Optimization['CostRealCum']=self.Optimization['CostRealCum'].cumsum()
+        self.Optimization['CostRealCum']=self.Optimization['CostReal'].cumsum()
 
 
 
