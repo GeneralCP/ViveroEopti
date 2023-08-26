@@ -89,12 +89,12 @@ def plot(number):
     
     return StreamingResponse(buf, media_type="image/png")
 
-@app.get("/GRIDSetpoint")
-def gridsetpoint():
+@app.get("/current/{entity}")
+def current(entity):
     if len(Eopti.Optimization.index)>0:
         df=Eopti.Optimization
         df=df[(df.index.date == date.today()) & (df.index.hour == datetime.now().hour) ]
-        return {"status": "success", "data": {'GridSetPoint': df['GridSetPoint'].values[0]*1000.0},"message": "null"}
+        return {"status": "success", "data": {entity: df[entity].values[0]},"message": "null"}
 
 @app.get("/forecast/{entity}")
 def forecast(entity):
