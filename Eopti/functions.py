@@ -178,7 +178,7 @@ class Eoptimization:
         exog = [col for col in self.edata.columns if col.startswith(('weekday', 'hour','holiday'))] #add temperature if needed
         end_forecast=(datetime.today().replace(minute=0, second=0, microsecond=0)+timedelta(hours=-1)).strftime("%Y/%m/%d, %H:%M:%S")
         forecaster.fit(y=self.edata.loc[begin_data:end_data, 'consumption'], exog=self.edata.loc[begin_data:end_data, exog])
-        self.Eforecast=forecaster.predict(34,self.edata.loc[:end_forecast, 'consumption'],exog=self.ExogFut)
+        self.Eforecast=forecaster.predict(35,self.edata.loc[:end_forecast, 'consumption'],exog=self.ExogFut)
         if backtest==1:
             end_data=(datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)+timedelta(days=-1)).astimezone(timezone(self.influxconfig['timezone']))
             begin_data=end_data+timedelta(days=-60)
@@ -205,7 +205,7 @@ class Eoptimization:
     #create complete dataframe for optimization for the nex day at 16:00 the previous day
     def createOptInput(self):
         curhour=datetime.today().hour
-        if curhour<16:
+        if curhour<14:
             horizon=24-curhour
         else:
             horizon=48-curhour
@@ -592,7 +592,7 @@ class Eoptimization:
         self.Optimization['PVreal']= self.Optimization['PVreal'].fillna(0.0) 
         self.Optimization['GRID']= self.Optimization['GRID'].fillna(0.0) 
         self.Optimization['SOCact']= self.Optimization['SOCact'].fillna(0.0) 
-        self.Optimization['CostReal']=np.where(self.Optimization['GRID']>0.0, self.Optimization['CostPurchase']*self.Optimization['GRID'], self.Optimization['CostFeedback']*self.Optimization['GRID'])
+        self.Optimization['CostReal']=np.where(self.Optimization['GRID']>0.0, self.Optimization['CostPurchase']*self.Optimization['GRID'], self.Optimization['CostFeedback']*self.Optimization['GRID']*-1.0)
         self.Optimization['CostRealCum']=self.Optimization['CostReal'].cumsum()
 
 

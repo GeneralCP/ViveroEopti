@@ -45,7 +45,9 @@
         "gap": "",
         "start": "",
         "inout": "out",
+        "septopics": true,
         "property": "payload",
+        "topi": "topic",
         "x": 470,
         "y": 180,
         "wires": [
@@ -62,6 +64,9 @@
         "func": "function gethour() {\n var date = new Date();\n var hour = (\"0\"+date.getHours()).substr(-2);\n return hour;\n}\n\nvar hour = gethour();\n\nreturn { payload : hour };",
         "outputs": 1,
         "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
         "x": 320,
         "y": 180,
         "wires": [
@@ -103,7 +108,7 @@
         "method": "GET",
         "ret": "obj",
         "paytoqs": "ignore",
-        "url": "http://localhost:8000/current/GRIDSetpoint",
+        "url": "http://192.168.2.101:8000/current/GridSetPoint",
         "tls": "",
         "persist": false,
         "proxy": "",
@@ -127,7 +132,7 @@
         "method": "GET",
         "ret": "obj",
         "paytoqs": "ignore",
-        "url": "http://192.168.2.101:8000/current/GRIDSetpoint",
+        "url": "http://192.168.2.101:8000/current/GridSetPoint",
         "tls": "",
         "persist": false,
         "proxy": "",
@@ -196,7 +201,7 @@
         "id": "80a8fd379bd0995d",
         "type": "inject",
         "z": "3872ce80a66f7019",
-        "name": "Every day at 4pm",
+        "name": "Every day at 2:05pm",
         "props": [
             {
                 "p": "payload"
@@ -207,13 +212,13 @@
             }
         ],
         "repeat": "",
-        "crontab": "00 16 * * *",
+        "crontab": "05 14 * * *",
         "once": false,
         "onceDelay": 0.1,
         "topic": "",
         "payload": "",
         "payloadType": "date",
-        "x": 150,
+        "x": 160,
         "y": 360,
         "wires": [
             [
@@ -225,7 +230,7 @@
         "id": "ce44ce6cb2385736",
         "type": "comment",
         "z": "3872ce80a66f7019",
-        "name": "Every day at 4 redo calculation",
+        "name": "Every day at 2 redo calculation",
         "info": "",
         "x": 170,
         "y": 300,
