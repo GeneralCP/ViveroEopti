@@ -562,38 +562,45 @@ class Eoptimization:
         if show==1:
             plt.show()
 
-    def getActuals(self):
-        #consumption
-        self.Optimization=self.Optimization.drop(columns=['Consumption','PVreal','GRID','SOCact'],errors='ignore')
-        consumption=self.influxclient.query('SELECT integral("value",1h)/ 1000 as Consumption, time as time from "W" WHERE "entity_id"=\''+self.config['Sensors']['Consumption']+'\' and time <= now() and time >= now() - 2d GROUP BY time(1h)')['W']
-        consumption.index.name='time'
-        consumption.index = consumption.index.tz_convert(self.influxconfig['timezone'])
-        consumption = consumption.asfreq('H', fill_value=0.0).sort_index()
-        self.Optimization=self.Optimization.join(consumption, how='left')
-        #PV
-        PV=self.influxclient.query('SELECT integral("value",1h)/ 1000 as PVreal, time as time from "W" WHERE "entity_id"=\''+self.config['Sensors']['PV']+'\' and time <= now() and time >= now() - 2d GROUP BY time(1h)')['W']
-        PV.index.name='time'
-        PV.index = PV.index.tz_convert(self.influxconfig['timezone'])
-        PV = PV.asfreq('H', fill_value=0.0).sort_index()
-        self.Optimization=self.Optimization.join(PV, how='left')
-        #GRID
-        GRID=self.influxclient.query('SELECT integral("value",1h)/ 1000 as GRID, time as time from "W" WHERE "entity_id"=\''+self.config['Sensors']['GRID']+'\' and time <= now() and time >= now() - 2d GROUP BY time(1h)')['W']
-        GRID.index.name='time'
-        GRID.index = GRID.index.tz_convert(self.influxconfig['timezone'])
-        GRID = GRID.asfreq('H', fill_value=0.0).sort_index()
-        self.Optimization=self.Optimization.join(GRID, how='left')
-        #SOC
-        SOC=self.influxclient.query('SELECT mean("value") as SOCact, time as time from "%" WHERE "entity_id"=\''+self.config['Sensors']['SOC']+'\' and time <= now() and time >= now() - 2d GROUP BY time(1h)')['%']
-        SOC.index.name='time'
-        SOC.index = SOC.index.tz_convert(self.influxconfig['timezone'])
-        SOC = SOC.asfreq('H', fill_value=0.0).sort_index()
-        self.Optimization=self.Optimization.join(SOC, how='left')  
-        self.Optimization['Consumption']= self.Optimization['Consumption'].fillna(0.0) 
-        self.Optimization['PVreal']= self.Optimization['PVreal'].fillna(0.0) 
-        self.Optimization['GRID']= self.Optimization['GRID'].fillna(0.0) 
-        self.Optimization['SOCact']= self.Optimization['SOCact'].fillna(0.0) 
-        self.Optimization['CostReal']=np.where(self.Optimization['GRID']>0.0, self.Optimization['CostPurchase']*self.Optimization['GRID'], self.Optimization['CostFeedback']*self.Optimization['GRID']*-1.0)
-        self.Optimization['CostRealCum']=self.Optimization['CostReal'].cumsum()
+    def getActuals(self, entity):
+        if entity == 'Consumption':
+            #consumption
+            self.Optimization=self.Optimization.drop(columns=['Consumption'],errors='ignore')
+            consumption=self.influxclient.query('SELECT integral("value",1h)/ 1000 as Consumption, time as time from "W" WHERE "entity_id"=\''+self.config['Sensors']['Consumption']+'\' and time <= now() and time >= now() - 2d GROUP BY time(1h)')['W']
+            consumption.index.name='time'
+            consumption.index = consumption.index.tz_convert(self.influxconfig['timezone'])
+            consumption = consumption.asfreq('H', fill_value=0.0).sort_index()
+            self.Optimization=self.Optimization.join(consumption, how='left')
+        elif entity == 'PVreal':
+            #PV
+            self.Optimization=self.Optimization.drop(columns=['PVreal'],errors='ignore')
+            PV=self.influxclient.query('SELECT integral("value",1h)/ 1000 as PVreal, time as time from "W" WHERE "entity_id"=\''+self.config['Sensors']['PV']+'\' and time <= now() and time >= now() - 2d GROUP BY time(1h)')['W']
+            PV.index.name='time'
+            PV.index = PV.index.tz_convert(self.influxconfig['timezone'])
+            PV = PV.asfreq('H', fill_value=0.0).sort_index()
+            self.Optimization=self.Optimization.join(PV, how='left')
+        elif entity == 'GRID':
+            #GRID
+            self.Optimization=self.Optimization.drop(columns=['GRID'],errors='ignore')
+            GRID=self.influxclient.query('SELECT integral("value",1h)/ 1000 as GRID, time as time from "W" WHERE "entity_id"=\''+self.config['Sensors']['GRID']+'\' and time <= now() and time >= now() - 2d GROUP BY time(1h)')['W']
+            GRID.index.name='time'
+            GRID.index = GRID.index.tz_convert(self.influxconfig['timezone'])
+            GRID = GRID.asfreq('H', fill_value=0.0).sort_index()
+            self.Optimization=self.Optimization.join(GRID, how='left')
+        elif entity == 'SOCact':
+            #SOC
+            self.Optimization=self.Optimization.drop(columns=['SOCact'],errors='ignore')
+            SOC=self.influxclient.query('SELECT mean("value") as SOCact, time as time from "%" WHERE "entity_id"=\''+self.config['Sensors']['SOC']+'\' and time <= now() and time >= now() - 2d GROUP BY time(1h)')['%']
+            SOC.index.name='time'
+            SOC.index = SOC.index.tz_convert(self.influxconfig['timezone'])
+            SOC = SOC.asfreq('H', fill_value=0.0).sort_index()
+            self.Optimization=self.Optimization.join(SOC, how='left')  
+            self.Optimization['Consumption']= self.Optimization['Consumption'].fillna(0.0) 
+            self.Optimization['PVreal']= self.Optimization['PVreal'].fillna(0.0) 
+            self.Optimization['GRID']= self.Optimization['GRID'].fillna(0.0) 
+            self.Optimization['SOCact']= self.Optimization['SOCact'].fillna(0.0) 
+            self.Optimization['CostReal']=np.where(self.Optimization['GRID']>0.0, self.Optimization['CostPurchase']*self.Optimization['GRID'], self.Optimization['CostFeedback']*self.Optimization['GRID']*-1.0)
+            self.Optimization['CostRealCum']=self.Optimization['CostReal'].cumsum()
 
 
 

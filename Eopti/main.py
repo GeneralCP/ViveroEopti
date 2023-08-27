@@ -107,7 +107,7 @@ def forecast(entity):
 
 @app.get("/actuals/{entity}")
 def actuals(entity):
-    Eopti.getActuals()
+    Eopti.getActuals(entity)
     df=Eopti.Optimization
     df=df[[entity]]
     data=[]
