@@ -110,6 +110,7 @@ def actuals(entity):
     Eopti.getActuals(entity)
     df=Eopti.Optimization
     df=df[[entity]]
+    print(df)
     data=[]
     for index, row in df.iterrows():
         data.append({'time': index, entity: row[entity]})

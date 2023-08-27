@@ -571,6 +571,8 @@ class Eoptimization:
             consumption.index = consumption.index.tz_convert(self.influxconfig['timezone'])
             consumption = consumption.asfreq('H', fill_value=0.0).sort_index()
             self.Optimization=self.Optimization.join(consumption, how='left')
+            self.Optimization['Consumption']= self.Optimization['Consumption'].fillna(0.0)
+            self.Optimization['PVreal']= self.Optimization['PVreal'].fillna(0.0)  
         elif entity == 'PVreal':
             #PV
             self.Optimization=self.Optimization.drop(columns=['PVreal'],errors='ignore')
@@ -581,12 +583,15 @@ class Eoptimization:
             self.Optimization=self.Optimization.join(PV, how='left')
         elif entity == 'GRID':
             #GRID
-            self.Optimization=self.Optimization.drop(columns=['GRID'],errors='ignore')
+            self.Optimization=self.Optimization.drop(columns=['GRID','CostReal','CostRealCum'],errors='ignore')
             GRID=self.influxclient.query('SELECT integral("value",1h)/ 1000 as GRID, time as time from "W" WHERE "entity_id"=\''+self.config['Sensors']['GRID']+'\' and time <= now() and time >= now() - 2d GROUP BY time(1h)')['W']
             GRID.index.name='time'
             GRID.index = GRID.index.tz_convert(self.influxconfig['timezone'])
             GRID = GRID.asfreq('H', fill_value=0.0).sort_index()
             self.Optimization=self.Optimization.join(GRID, how='left')
+            self.Optimization['GRID']= self.Optimization['GRID'].fillna(0.0) 
+            self.Optimization['CostReal']=np.where(self.Optimization['GRID']>0.0, self.Optimization['CostPurchase']*self.Optimization['GRID'], self.Optimization['CostFeedback']*self.Optimization['GRID']*-1.0)
+            self.Optimization['CostRealCum']=self.Optimization['CostReal'].cumsum()            
         elif entity == 'SOCact':
             #SOC
             self.Optimization=self.Optimization.drop(columns=['SOCact'],errors='ignore')
@@ -595,12 +600,11 @@ class Eoptimization:
             SOC.index = SOC.index.tz_convert(self.influxconfig['timezone'])
             SOC = SOC.asfreq('H', fill_value=0.0).sort_index()
             self.Optimization=self.Optimization.join(SOC, how='left')  
-            self.Optimization['Consumption']= self.Optimization['Consumption'].fillna(0.0) 
-            self.Optimization['PVreal']= self.Optimization['PVreal'].fillna(0.0) 
-            self.Optimization['GRID']= self.Optimization['GRID'].fillna(0.0) 
             self.Optimization['SOCact']= self.Optimization['SOCact'].fillna(0.0) 
-            self.Optimization['CostReal']=np.where(self.Optimization['GRID']>0.0, self.Optimization['CostPurchase']*self.Optimization['GRID'], self.Optimization['CostFeedback']*self.Optimization['GRID']*-1.0)
-            self.Optimization['CostRealCum']=self.Optimization['CostReal'].cumsum()
+            
+           
+            
+
 
 
 
