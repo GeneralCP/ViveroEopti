@@ -572,7 +572,6 @@ class Eoptimization:
             consumption = consumption.asfreq('H', fill_value=0.0).sort_index()
             self.Optimization=self.Optimization.join(consumption, how='left')
             self.Optimization['Consumption']= self.Optimization['Consumption'].fillna(0.0)
-            self.Optimization['PVreal']= self.Optimization['PVreal'].fillna(0.0)  
         elif entity == 'PVreal':
             #PV
             self.Optimization=self.Optimization.drop(columns=['PVreal'],errors='ignore')
@@ -581,6 +580,7 @@ class Eoptimization:
             PV.index = PV.index.tz_convert(self.influxconfig['timezone'])
             PV = PV.asfreq('H', fill_value=0.0).sort_index()
             self.Optimization=self.Optimization.join(PV, how='left')
+            self.Optimization['PVreal']= self.Optimization['PVreal'].fillna(0.0)              
         elif entity == 'GRID':
             #GRID
             self.Optimization=self.Optimization.drop(columns=['GRID','CostReal','CostRealCum'],errors='ignore')
