@@ -581,7 +581,7 @@ class Eoptimization:
             PV = PV.asfreq('H', fill_value=0.0).sort_index()
             self.Optimization=self.Optimization.join(PV, how='left')
             self.Optimization['PVreal']= self.Optimization['PVreal'].fillna(0.0)              
-        elif entity == 'GRID':
+        elif entity == 'GRID' or entity == 'CostReal' or entity == 'CostRealCum':
             #GRID
             self.Optimization=self.Optimization.drop(columns=['GRID','CostReal','CostRealCum'],errors='ignore')
             GRID=self.influxclient.query('SELECT integral("value",1h)/ 1000 as GRID, time as time from "W" WHERE "entity_id"=\''+self.config['Sensors']['GRID']+'\' and time <= now() and time >= now() - 2d GROUP BY time(1h)')['W']
