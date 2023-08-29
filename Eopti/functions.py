@@ -50,6 +50,8 @@ class Eoptimization:
 
         #load PV forecast
     def loadPVForecast(self):
+        self.PVForecastToday={hour:0 for hour in range(0,24)}
+        self.PVForecastTomorrow={hour:0 for hour in range(0,24)}
         for row in self.config['PVinstallations']:
             previoushourT=0.0
             previoushourTom=0.0    

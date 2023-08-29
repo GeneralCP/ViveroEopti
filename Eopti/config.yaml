@@ -1,6 +1,6 @@
 name: "Vivero E-optimization"
 description: "addon which supplies several API endpoints for optimizing and monitoring a home battery PV system in the Netherlands"
-version: "0.1.22"
+version: "0.1.23"
 slug: "e-opti"
 init: false
 arch:
