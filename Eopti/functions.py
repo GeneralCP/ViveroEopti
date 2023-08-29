@@ -347,7 +347,7 @@ class Eoptimization:
                     if row['Eforecast']>row['PVForecast']:
                         BATout=(row['Eforecast']-row['PVForecast'])/eta
                     if row['PVForecast']>row['Eforecast']:
-                        BATin=row['PVForecast']-row['Eforecast']*eta
+                        BATin=(row['PVForecast']-row['Eforecast'])*eta
                     if (SOCsim + BATin) > BattCapacity:
                         SOCsim=BattCapacity
                     else:
