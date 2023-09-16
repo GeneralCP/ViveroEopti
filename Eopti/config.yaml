@@ -1,6 +1,6 @@
 name: "Vivero E-optimization"
 description: "addon which supplies several API endpoints for optimizing and monitoring a home battery PV system in the Netherlands"
-version: "0.1.24"
+version: "0.1.25"
 slug: "e-opti"
 init: false
 arch:
@@ -61,7 +61,7 @@ options:
     energy_tax: 0.152448
     # opslag levering van energiemaatschappij per kWh
     delivery_cost: 0.02178
-    feedback_rebate: 0.01089
+    feedback_rebate: 0.02178
     # BTW percentage (decimaal)
     btw: 0.21
     # Salderingspercentage (decimaal)
@@ -85,6 +85,10 @@ options:
     influxdb_username: 'username'
     influxdb_password: 'password'
     influxdb_database: 'homeassistant'
+    influxdb_version: 1
+    #only when using influx db version 2
+    influxdb_token: "aaaaaaaaaaa"
+    influxdb_organization: "organization"
 
   #holiday used in energy prediction exogenous variables
   Holiday:
@@ -110,7 +114,7 @@ options:
     gridoutmax: 15.0
 
     #GRID slack. This percentage of the daily load is allowed to be taken from the GRID instead of solar. Set this to 100.0 to allow unlimited GRID usage. If this is set to 0. Model will only take from GRID when solar or battery is insufficient
-    GRIDSlack: 0.005
+    GRIDSlack: 0.002
     #SOC slack. When optimization is run with fixSOC option. This option allows some slack. Settings this to 0.1 allows end SOC to be 10% lower or higher. lower than 0.1 not advisable
     SOCSlack: 0.0
     #MIN ending SOC. Prevents SOC going below this state at the end of optimization run. Is ignored when option smartSOC is used
@@ -193,6 +197,9 @@ schema:
     influxdb_username: str
     influxdb_password: str
     influxdb_database: str
+    influxdb_version: int
+    influxdb_token: str
+    influxdb_organization: "organization"
 
   #holiday used in energy prediction exogenous variables
   Holiday:

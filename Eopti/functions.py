@@ -1,9 +1,11 @@
+from inspect import getframeinfo
 import requests
 from datetime import datetime, timedelta
 from entsoe import EntsoePandasClient
 import pandas as pd
 import numpy as np
 from influxdb import DataFrameClient
+from influxdb_client import InfluxDBClient
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 from mip import *
@@ -41,7 +43,11 @@ class Eoptimization:
         self.ExogFut=''
         self.Optimization=''
         self.influxconfig=config['Eprediction']
-        self.influxclient = DataFrameClient(host=self.influxconfig['influxdb_ip'], port=self.influxconfig['influxdb_port'], username=self.influxconfig['influxdb_username'], password=self.influxconfig['influxdb_password'], database=self.influxconfig['influxdb_database'])
+        if self.influxconfig['influxdb_version'] == 1:
+            self.influxclient = DataFrameClient(host=self.influxconfig['influxdb_ip'], port=self.influxconfig['influxdb_port'], username=self.influxconfig['influxdb_username'], password=self.influxconfig['influxdb_password'], database=self.influxconfig['influxdb_database'])
+        else:
+            self.influxclient = InfluxDBClient(url=self.influxconfig['influxdb_ip']+self.influxconfig['influxdb_port'], token=self.influxconfig['influxdb_token'], org=self.influxconfig['organization'])
+            self.query_api = self.influxclient.query_api()
         self.dayondayprice = 0.0
         self.calculatedat = datetime.now()
         #############################
@@ -108,15 +114,14 @@ class Eoptimization:
     #create predicted energy consumption forecast
     def loadEdata(self):
         #get consumption
-        self.edata=self.influxclient.query('SELECT integral("value",1h)/ 1000 as consumption, time as time from "W" WHERE "entity_id"=\''+self.influxconfig['energy_demand_sensor']+'\' and time <= now() and time >= now() - 365d GROUP BY time(1h)')['W']
+        self.edata=self.getfromInflux('edata')
         self.edata.index.name='time'
         self.edata.index = self.edata.index.tz_convert(self.influxconfig['timezone'])
         self.edata = self.edata.asfreq('H', fill_value=0.0).sort_index()
         self.edata['weekday'] = self.edata.index.weekday
         self.edata['hour'] = self.edata.index.hour
         #get temperature data
-        tdata=self.influxclient.query('SELECT mean("value") as temperature, time as time from "°C" WHERE "entity_id"=\''+self.influxconfig['outside_temperature_sensor']+'\' and time <= now() and time >= now() - 365d GROUP BY time(1h)')['°C']
-        tdata.index.name='time'
+        tdata=self.getfromInflux('tdata')
         tdata.index = tdata.index.tz_convert(self.influxconfig['timezone'])
         tdata = tdata.asfreq('H', fill_value=15.0).sort_index()
         self.edata = self.edata.join(tdata, how='left')
@@ -568,7 +573,7 @@ class Eoptimization:
         if entity == 'Consumption':
             #consumption
             self.Optimization=self.Optimization.drop(columns=['Consumption'],errors='ignore')
-            consumption=self.influxclient.query('SELECT integral("value",1h)/ 1000 as Consumption, time as time from "W" WHERE "entity_id"=\''+self.config['Sensors']['Consumption']+'\' and time <= now() and time >= now() - 2d GROUP BY time(1h)')['W']
+            consumption=self.getfromInflux('consumption')
             consumption.index.name='time'
             consumption.index = consumption.index.tz_convert(self.influxconfig['timezone'])
             consumption = consumption.asfreq('H', fill_value=0.0).sort_index()
@@ -577,7 +582,7 @@ class Eoptimization:
         elif entity == 'PVreal':
             #PV
             self.Optimization=self.Optimization.drop(columns=['PVreal'],errors='ignore')
-            PV=self.influxclient.query('SELECT integral("value",1h)/ 1000 as PVreal, time as time from "W" WHERE "entity_id"=\''+self.config['Sensors']['PV']+'\' and time <= now() and time >= now() - 2d GROUP BY time(1h)')['W']
+            PV=self.getfromInflux('PV')
             PV.index.name='time'
             PV.index = PV.index.tz_convert(self.influxconfig['timezone'])
             PV = PV.asfreq('H', fill_value=0.0).sort_index()
@@ -586,7 +591,7 @@ class Eoptimization:
         elif entity == 'GRID' or entity == 'CostReal' or entity == 'CostRealCum':
             #GRID
             self.Optimization=self.Optimization.drop(columns=['GRID','CostReal','CostRealCum'],errors='ignore')
-            GRID=self.influxclient.query('SELECT integral("value",1h)/ 1000 as GRID, time as time from "W" WHERE "entity_id"=\''+self.config['Sensors']['GRID']+'\' and time <= now() and time >= now() - 2d GROUP BY time(1h)')['W']
+            GRID=self.getfromInflux('GRID')
             GRID.index.name='time'
             GRID.index = GRID.index.tz_convert(self.influxconfig['timezone'])
             GRID = GRID.asfreq('H', fill_value=0.0).sort_index()
@@ -597,14 +602,43 @@ class Eoptimization:
         elif entity == 'SOCact':
             #SOC
             self.Optimization=self.Optimization.drop(columns=['SOCact'],errors='ignore')
-            SOC=self.influxclient.query('SELECT mean("value") as SOCact, time as time from "%" WHERE "entity_id"=\''+self.config['Sensors']['SOC']+'\' and time <= now() and time >= now() - 2d GROUP BY time(1h)')['%']
+            SOC=self.getfromInflux('SOC')
             SOC.index.name='time'
             SOC.index = SOC.index.tz_convert(self.influxconfig['timezone'])
             SOC = SOC.asfreq('H', fill_value=0.0).sort_index()
             self.Optimization=self.Optimization.join(SOC, how='left')  
             self.Optimization['SOCact']= self.Optimization['SOCact'].fillna(0.0) 
             
-           
+    def getfromInflux(self,value):
+        if self.influxconfig['influxdb_version'] == 1:
+            if value == 'edata':
+                return self.influxclient.query('SELECT integral("value",1h)/ 1000 as consumption, time as time from "W" WHERE "entity_id"=\''+self.influxconfig['energy_demand_sensor']+'\' and time <= now() and time >= now() - 365d GROUP BY time(1h)')['W']
+            elif value == 'tdata':
+                return self.influxclient.query('SELECT mean("value") as temperature, time as time from "°C" WHERE "entity_id"=\''+self.influxconfig['outside_temperature_sensor']+'\' and time <= now() and time >= now() - 365d GROUP BY time(1h)')['°C']
+            elif value == 'consumption':
+                return self.influxclient.query('SELECT integral("value",1h)/ 1000 as Consumption, time as time from "W" WHERE "entity_id"=\''+self.config['Sensors']['Consumption']+'\' and time <= now() and time >= now() - 2d GROUP BY time(1h)')['W']
+            elif value == 'PV':
+                return self.influxclient.query('SELECT integral("value",1h)/ 1000 as PVreal, time as time from "W" WHERE "entity_id"=\''+self.config['Sensors']['PV']+'\' and time <= now() and time >= now() - 2d GROUP BY time(1h)')['W']
+            elif value == 'GRID':
+                return self.influxclient.query('SELECT integral("value",1h)/ 1000 as GRID, time as time from "W" WHERE "entity_id"=\''+self.config['Sensors']['GRID']+'\' and time <= now() and time >= now() - 2d GROUP BY time(1h)')['W']
+            elif value == 'SOC':
+                return self.influxclient.query('SELECT mean("value") as SOCact, time as time from "%" WHERE "entity_id"=\''+self.config['Sensors']['SOC']+'\' and time <= now() and time >= now() - 2d GROUP BY time(1h)')['%']
+        if self.influxconfig['influxdb_version'] == 2:
+            if value == 'edata':
+                return 1
+            elif value == 'tdata':
+                return 1
+            elif value == 'consumption':
+                return 1
+            elif value == 'PV':
+                return 1
+            elif value == 'GRID':
+                return 1
+            elif value == 'SOC':
+                return 1
+
+
+
             
 
 

@@ -10,6 +10,7 @@ RUN apt-get update \
 RUN pip install entsoe_py --break-system-packages
 RUN pip install fastapi --break-system-packages
 RUN pip install influxdb --break-system-packages
+RUN pip install influxdb-client --break-system-packages
 RUN pip install lightgbm --break-system-packages
 RUN pip install matplotlib --break-system-packages
 RUN pip install mip --break-system-packages
