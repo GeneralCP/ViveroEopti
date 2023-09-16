@@ -199,7 +199,7 @@ schema:
     influxdb_database: str
     influxdb_version: int
     influxdb_token: str
-    influxdb_organization: "organization"
+    influxdb_organization: str
 
   #holiday used in energy prediction exogenous variables
   Holiday:
