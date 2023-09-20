@@ -625,17 +625,100 @@ class Eoptimization:
                 return self.influxclient.query('SELECT mean("value") as SOCact, time as time from "%" WHERE "entity_id"=\''+self.config['Sensors']['SOC']+'\' and time <= now() and time >= now() - 2d GROUP BY time(1h)')['%']
         if self.influxconfig['influxdb_version'] == 2:
             if value == 'edata':
-                return 1
+                query = 'from(bucket: "'+self.influxconfig['influxdb_database']+'")\
+                |> range(start: -365d, stop: now())\
+                |> filter(fn: (r) => r["_measurement"] == "W")\
+                |> filter(fn: (r) => r["_field"] == "value")\
+                |> filter(fn: (r) => r["domain"] == "sensor")\
+                |> filter(fn: (r) => r["entity_id"] == "'+self.influxconfig['energy_demand_sensor']+'")\
+                |> aggregateWindow(every: 1h, fn: integral, createEmpty: false)\
+                |> map(fn: (r) => ({r with _value: r._value / 1000.0}))\
+                |> pivot(rowKey:["_time"],columnKey: ["_field"],valueColumn: "_value")\
+                |> keep(columns: ["_time","value"])\
+                |> rename(columns: {value: "consumption"})'    
+                result = self.query_api.query_data_frame(org=self.influxconfig['influxdb_organization'], query=query)
+                result['_time'] = pd.to_datetime(result['_time']) 
+                result.set_index('_time', drop=True, inplace=True)
+                return result
             elif value == 'tdata':
-                return 1
+                query = 'from(bucket: "'+self.influxconfig['influxdb_database']+'")\
+                |> range(start: -365d, stop: now())\
+                |> filter(fn: (r) => r["_measurement"] == "°C")\
+                |> filter(fn: (r) => r["_field"] == "value")\
+                |> filter(fn: (r) => r["domain"] == "sensor")\
+                |> filter(fn: (r) => r["entity_id"] == "'+self.influxconfig['outside_temperature_sensor']+'")\
+                |> aggregateWindow(every: 1h, fn: mean, createEmpty: false)\
+                |> map(fn: (r) => ({r with _value: r._value}))\
+                |> keep(columns: ["_time","value"])\
+                |> rename(columns: {value: "temperature"})'    
+                result = self.query_api.query_data_frame(org=self.influxconfig['influxdb_organization'], query=query)
+                result['_time'] = pd.to_datetime(result['_time']) 
+                result.set_index('_time', drop=True, inplace=True)
+                return result
             elif value == 'consumption':
-                return 1
+                query = 'from(bucket: "'+self.influxconfig['influxdb_database']+'")\
+                |> range(start: -2d, stop: now())\
+                |> filter(fn: (r) => r["_measurement"] == "W")\
+                |> filter(fn: (r) => r["_field"] == "value")\
+                |> filter(fn: (r) => r["domain"] == "sensor")\
+                |> filter(fn: (r) => r["entity_id"] == "'+self.config['Sensors']['Consumption']+'")\
+                |> aggregateWindow(every: 1h, fn: integral, createEmpty: false)\
+                |> map(fn: (r) => ({r with _value: r._value / 1000.0}))\
+                |> pivot(rowKey:["_time"],columnKey: ["_field"],valueColumn: "_value")\
+                |> keep(columns: ["_time","value"])\
+                |> rename(columns: {value: "Consumption"})'    
+                result = self.query_api.query_data_frame(org=self.influxconfig['influxdb_organization'], query=query)
+                result['_time'] = pd.to_datetime(result['_time']) 
+                result.set_index('_time', drop=True, inplace=True)
+                return result
             elif value == 'PV':
-                return 1
+                query = 'from(bucket: "'+self.influxconfig['influxdb_database']+'")\
+                |> range(start: -2d, stop: now())\
+                |> filter(fn: (r) => r["_measurement"] == "W")\
+                |> filter(fn: (r) => r["_field"] == "value")\
+                |> filter(fn: (r) => r["domain"] == "sensor")\
+                |> filter(fn: (r) => r["entity_id"] == "'+self.config['Sensors']['PV']+'")\
+                |> aggregateWindow(every: 1h, fn: integral, createEmpty: false)\
+                |> map(fn: (r) => ({r with _value: r._value / 1000.0}))\
+                |> pivot(rowKey:["_time"],columnKey: ["_field"],valueColumn: "_value")\
+                |> keep(columns: ["_time","value"])\
+                |> rename(columns: {value: "PVreal"})'    
+                result = self.query_api.query_data_frame(org=self.influxconfig['influxdb_organization'], query=query)
+                result['_time'] = pd.to_datetime(result['_time']) 
+                result.set_index('_time', drop=True, inplace=True)
+                return result
             elif value == 'GRID':
-                return 1
+                query = 'from(bucket: "'+self.influxconfig['influxdb_database']+'")\
+                |> range(start: -2d, stop: now())\
+                |> filter(fn: (r) => r["_measurement"] == "W")\
+                |> filter(fn: (r) => r["_field"] == "value")\
+                |> filter(fn: (r) => r["domain"] == "sensor")\
+                |> filter(fn: (r) => r["entity_id"] == "'+self.config['Sensors']['GRID']+'")\
+                |> aggregateWindow(every: 1h, fn: integral, createEmpty: false)\
+                |> map(fn: (r) => ({r with _value: r._value / 1000.0}))\
+                |> pivot(rowKey:["_time"],columnKey: ["_field"],valueColumn: "_value")\
+                |> keep(columns: ["_time","value"])\
+                |> rename(columns: {value: "GRID"})'    
+                result = self.query_api.query_data_frame(org=self.influxconfig['influxdb_organization'], query=query)
+                result['_time'] = pd.to_datetime(result['_time']) 
+                result.set_index('_time', drop=True, inplace=True)
+                return result
             elif value == 'SOC':
-                return 1
+                query = 'from(bucket: "'+self.influxconfig['influxdb_database']+'")\
+                |> range(start: -2d, stop: now())\
+                |> filter(fn: (r) => r["_measurement"] == "W")\
+                |> filter(fn: (r) => r["_field"] == "value")\
+                |> filter(fn: (r) => r["domain"] == "sensor")\
+                |> filter(fn: (r) => r["entity_id"] == "'+self.config['Sensors']['SOC']+'")\
+                |> aggregateWindow(every: 1h, fn: integral, createEmpty: false)\
+                |> map(fn: (r) => ({r with _value: r._value / 1000.0}))\
+                |> pivot(rowKey:["_time"],columnKey: ["_field"],valueColumn: "_value")\
+                |> keep(columns: ["_time","value"])\
+                |> rename(columns: {value: "SOCact"})'    
+                result = self.query_api.query_data_frame(org=self.influxconfig['influxdb_organization'], query=query)
+                result['_time'] = pd.to_datetime(result['_time']) 
+                result.set_index('_time', drop=True, inplace=True)
+                return result
 
 
 
