@@ -13,7 +13,7 @@ RUN apt-get install -y \
         gcc \
         g++ \
         gfortran \
-        libgfortran-10-dev \
+        libgfortran-11-dev \
         liblapack-dev libamd2 libcholmod3 libmetis-dev libsuitesparse-dev libnauty2-dev git \
         make pkgconf nano file mariadb-client
 
