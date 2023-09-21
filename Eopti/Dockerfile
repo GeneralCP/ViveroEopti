@@ -6,14 +6,14 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 RUN apt-get update -y
 
-RUN apt-get install -y --no-install-recommends \
+RUN apt-get install -y \
         python3 \
         python3-pip \
         wget \
         gcc \
         g++ \
         gfortran \
-        libgfortran-9-dev \
+        libgfortran-10-dev \
         liblapack-dev libamd2 libcholmod3 libmetis-dev libsuitesparse-dev libnauty2-dev git \
         make pkgconf nano file mariadb-client
 
