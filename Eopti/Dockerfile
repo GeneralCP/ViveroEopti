@@ -24,7 +24,6 @@ RUN pip install influxdb --break-system-packages
 RUN pip install influxdb-client --break-system-packages
 RUN pip install lightgbm --break-system-packages
 RUN pip install matplotlib --break-system-packages
-RUN pip install mip --break-system-packages
 RUN pip install numpy --break-system-packages
 RUN pip install pandas --break-system-packages
 RUN pip install pytz --break-system-packages
@@ -49,6 +48,7 @@ RUN echo 'export PMIP_CBC_LIBRARY="/root/build/miplib/lib/libCbcSolver.so"' >> ~
 RUN echo 'LD_LIBRARY_PATH="/root/build/miplib/lib/"' >> ~/.bashrc
 
 WORKDIR /
+RUN pip install mip --break-system-packages
 # Install requirements for add-on
 COPY functions.py /
 COPY main.py /
