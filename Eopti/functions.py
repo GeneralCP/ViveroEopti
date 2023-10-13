@@ -341,6 +341,7 @@ class Eoptimization:
             #find max amount to be taken from GRID if settings don't allow unlmited GRID use
             if self.config['Optimization']['GRIDSlack']!=100.0:
                 SOCsim=SOC
+                SOCstart=SOC
                 DifFromMinSOC=SOC-minSOC
                 GRIDallowance=0.0
                 
@@ -361,7 +362,7 @@ class Eoptimization:
                     if DifFromMinSOC<0.0 and DifFromMinSOC<prevDifFromMinSOC:
                         GRIDallowance+=(prevDifFromMinSOC-DifFromMinSOC)
                     print(GRIDallowance)
-                GRIDallowance=GRIDallowance+((endSOC-SOCsim) if SOCsim<endSOC else 0.0)
+                GRIDallowance=GRIDallowance+((endSOC-SOCstart) if SOCstart<endSOC else 0.0)
                 print(GRIDallowance)
                 m += xsum(x[i] for i in n) <= (1.0+self.config['Optimization']['GRIDSlack'])*(GRIDallowance/eta)          
 
