@@ -361,9 +361,7 @@ class Eoptimization:
                     DifFromMinSOC=SOCsim-minSOC
                     if DifFromMinSOC<0.0 and DifFromMinSOC<prevDifFromMinSOC:
                         GRIDallowance+=(prevDifFromMinSOC-DifFromMinSOC)
-                    print(GRIDallowance)
-                GRIDallowance=GRIDallowance+((endSOC-SOCstart) if SOCstart<endSOC else 0.0)
-                print(GRIDallowance)
+                GRIDallowance=GRIDallowance+((endSOC-SOCsim) if SOCsim<endSOC else 0.0)
                 m += xsum(x[i] for i in n) <= (1.0+self.config['Optimization']['GRIDSlack'])*(GRIDallowance/eta)          
 
         m.max_gap = 0.05
