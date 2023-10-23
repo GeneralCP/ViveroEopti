@@ -316,6 +316,15 @@ class Eoptimization:
             m += z[i]-(self.config['Battery']['maxdischarge']*(1-e[i])) <= 0
             m += SOC + xsum(w[j]*eta for j in range(i) ) - xsum(z[j]/eta for j in range(i+1)) <= maxSOC
             m += SOC + xsum(w[j]*eta for j in range(i) ) - xsum(z[j]/eta for j in range(i+1)) >= minSOC
+        
+        #prevent feed back to GRID from battery if not allowed
+        if self.config['Optimization']['FeedbackBatt'] == 0:
+            for i in n:
+                if PV[i] > PL[i]:
+                    m += y[i] - (PV[i]-PL[i]) <= 0
+                else:
+                    m += y[i] == 0
+        
 
         if fixSOCt>0 and SOCtarget>0.0:
             m += SOC + xsum(w[i]*eta for i in range(fixSOCt+1) ) - xsum(z[i]/eta for i in range(fixSOCt+1)) <= SOCtarget*BattCapacity + 0.025*BattCapacity

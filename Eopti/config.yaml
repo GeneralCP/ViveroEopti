@@ -1,6 +1,6 @@
 name: "Vivero E-optimization"
 description: "addon which supplies several API endpoints for optimizing and monitoring a home battery PV system in the Netherlands"
-version: "0.1.35"
+version: "0.1.36"
 slug: "e-opti"
 init: false
 arch:
@@ -97,7 +97,9 @@ options:
     - start: '2023/05/18'
       end: '2023/05/21'
     - start: '2023/05/26'
-      end: '2023/05/29'    
+      end: '2023/05/29'  
+    - start: '2023/10/13'
+      end: '2023/10/21'  
 
 
   #temp forecast
@@ -120,8 +122,10 @@ options:
     #MIN ending SOC. Prevents SOC going below this state at the end of optimization run. Is ignored when option smartSOC is used
     MinEndSOC: 0.95
     #Smart endSOC. if forecast dynamic prices are higher for the day after tomorrow. use HighSOC else use LOWSOC.
-    HighSOC: 0.9
-    LowSOC: 0.25
+    HighSOC: 0.8
+    LowSOC: 0.40
+    #Allow feed back to GRID from battery
+    FeedbackBatt: 1
   
   #sensors used to fill realized historical values during optimization window
   #only fill when you want to compare the forecast to realized values. e.g. compare energy forecast with real consumption in home assistant. 
@@ -209,6 +213,8 @@ schema:
       end: str
     - start: str
       end: str    
+    - start: str
+      end: str
 
 
   #temp forecast
@@ -233,6 +239,8 @@ schema:
     #Smart endSOC. if forecast dynamic prices are higher for the day after tomorrow. use HighSOC else use LOWSOC.
     HighSOC: float
     LowSOC: float
+    #Allow feed back to GRID from battery
+    FeedbackBatt: int
 
   Sensors:
     SOC: str
