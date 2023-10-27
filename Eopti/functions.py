@@ -108,7 +108,10 @@ class Eoptimization:
             self.TempForecast = pd.concat([self.TempForecast, pd.DataFrame({'time': datetime.fromtimestamp(row['dt']), 'temperature': row['temp']-272.15}, index=[0])], ignore_index=True)
         print(self.TempForecast)
         self.TempForecast=self.TempForecast.set_index('time')
-        self.TempForecast.index = self.TempForecast.index.tz_localize(self.influxconfig['timezone'], ambiguous='infer')
+        try:
+            self.TempForecast.index = self.TempForecast.index.tz_localize(self.influxconfig['timezone'], ambiguous='infer')
+        except:
+            self.TempForecast.index = self.TempForecast.index.tz_localize(self.influxconfig['timezone'])
 
 
 
@@ -164,7 +167,10 @@ class Eoptimization:
         self.ExogFut=pd.DataFrame(pd.date_range((datetime.today().replace(minute=0, second=0, microsecond=0)).strftime("%Y/%m/%d, %H:%M:%S"),(datetime.today().replace(minute=0, second=0, microsecond=0)+timedelta(hours=34)).strftime("%Y/%m/%d, %H:%M:%S"),freq='H'),columns=['time'])
         self.ExogFut['time']=pd.to_datetime(self.ExogFut['time'])
         self.ExogFut=self.ExogFut.set_index('time')
-        self.ExogFut = self.ExogFut.tz_localize(self.influxconfig['timezone'], ambiguous='infer')
+        try:
+            self.ExogFut = self.ExogFut.tz_localize(self.influxconfig['timezone'], ambiguous=True)
+        except:
+            self.ExogFut = self.ExogFut.tz_localize(self.influxconfig['timezone'])
         self.ExogFut = self.ExogFut.asfreq('H', fill_value=0.0).sort_index()
         self.ExogFut['weekday'] = self.ExogFut.index.weekday
         self.ExogFut['hour'] = self.ExogFut.index.hour
@@ -220,7 +226,10 @@ class Eoptimization:
         self.Optimization=pd.DataFrame(pd.date_range((datetime.today().replace(hour=curhour,minute=0, second=0, microsecond=0)).strftime("%Y/%m/%d, %H:%M:%S"),(datetime.today().replace(hour=curhour,minute=0, second=0, microsecond=0)+timedelta(hours=horizon)).strftime("%Y/%m/%d, %H:%M:%S"),freq='H'),columns=['time'])
         self.Optimization['time']=pd.to_datetime(self.Optimization['time'])
         self.Optimization=self.Optimization.set_index('time')
-        self.Optimization = self.Optimization.tz_localize(self.influxconfig['timezone'], ambiguous='infer')
+        try:
+            self.Optimization = self.Optimization.tz_localize(self.influxconfig['timezone'], ambiguous='infer')
+        except:
+            self.Optimization = self.Optimization.tz_localize(self.influxconfig['timezone'])
         self.Optimization = self.Optimization.asfreq('H', fill_value=0.0).sort_index()
         self.Optimization=self.Optimization.join(self.Eforecast, how='left')
         self.Optimization=self.Optimization.rename(columns={'pred': 'Eforecast'})
