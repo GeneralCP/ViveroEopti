@@ -103,15 +103,13 @@ class Eoptimization:
         lon=self.config['TempForecast']['lon']
         appid=self.config['TempForecast']['appid']
         response=requests.get(f'https://api.openweathermap.org/data/3.0/onecall?lat={lat}&lon={lon}&exclude=current,minutely,daily,alerts&appid={appid}').json()
-        print(response)
         for row in response['hourly']:
             self.TempForecast = pd.concat([self.TempForecast, pd.DataFrame({'time': datetime.fromtimestamp(row['dt']), 'temperature': row['temp']-272.15}, index=[0])], ignore_index=True)
-        print(self.TempForecast)
         self.TempForecast=self.TempForecast.set_index('time')
         try:
             self.TempForecast.index = self.TempForecast.index.tz_localize(self.influxconfig['timezone'], ambiguous='infer')
         except:
-            self.TempForecast.index = self.TempForecast.index.tz_localize(self.influxconfig['timezone'])
+            self.TempForecast.index = self.TempForecast.index.tz_localize(self.influxconfig['timezone'], ambiguous=True)
 
 
 
@@ -229,7 +227,7 @@ class Eoptimization:
         try:
             self.Optimization = self.Optimization.tz_localize(self.influxconfig['timezone'], ambiguous='infer')
         except:
-            self.Optimization = self.Optimization.tz_localize(self.influxconfig['timezone'])
+            self.Optimization = self.Optimization.tz_localize(self.influxconfig['timezone'], ambiguous=True)
         self.Optimization = self.Optimization.asfreq('H', fill_value=0.0).sort_index()
         self.Optimization=self.Optimization.join(self.Eforecast, how='left')
         self.Optimization=self.Optimization.rename(columns={'pred': 'Eforecast'})
