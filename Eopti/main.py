@@ -54,7 +54,7 @@ def calculate():
         return {"status": "Error trying to load historical energy data from HA sensor and influxDB"}     
     
     try:
-        Eopti.getExogFut()
+        Eopti.getExogFut(temp=1)
     except:
         return {"status": "Error trying to get future external variables"}  
 
