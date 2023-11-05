@@ -102,10 +102,12 @@ class Eoptimization:
         lat=self.config['TempForecast']['lat']
         lon=self.config['TempForecast']['lon']
         appid=self.config['TempForecast']['appid']
-        response=requests.get(f'https://api.openweathermap.org/data/3.0/onecall?lat={lat}&lon={lon}&exclude=current,minutely,daily,alerts&appid={appid}').json()
-        for row in response['hourly']:
-            self.TempForecast = pd.concat([self.TempForecast, pd.DataFrame({'time': datetime.fromtimestamp(row['dt']), 'temperature': row['temp']-272.15}, index=[0])], ignore_index=True)
+        response=requests.get(f'https://api.openweathermap.org/data/3.0/onecall?lat={lat}&lon={lon}&exclude=current,minutely,hourly,alerts&appid={appid}').json()
+        for row in response['daily']:
+            self.TempForecast = pd.concat([self.TempForecast, pd.DataFrame({'time': datetime.fromtimestamp(row['dt']), 'temperature': row['temp']['max']-272.15}, index=[0])], ignore_index=True)
         self.TempForecast=self.TempForecast.set_index('time')
+        self.TempForecast.index=self.TempForecast.index.normalize()
+        self.TempForecast=self.TempForecast.asfreq('H', method='ffill').sort_index()
         try:
             self.TempForecast.index = self.TempForecast.index.tz_localize(self.influxconfig['timezone'], ambiguous='infer')
         except:
@@ -125,9 +127,12 @@ class Eoptimization:
         #get temperature data
         tdata=self.getfromInflux('tdata')
         tdata.index = tdata.index.tz_convert(self.influxconfig['timezone'])
-        tdata = tdata.asfreq('H', fill_value=15.0).sort_index()
-        self.edata = self.edata.join(tdata, how='left')
+        tdata.index.name='time'
+        tdata.index = tdata.index.normalize()
+        tdata = tdata.asfreq('H', method='ffill').sort_index()
+        self.edata = self.edata.join(tdata, how='left')        
         self.edata['temperature']=self.edata['temperature'].fillna(0.0)
+        self.edata['temperature']=self.edata['temperature'].round(2)
         #add holiday data
         self.edata['holiday']=0
         for row in self.config['Holiday']:
@@ -172,10 +177,11 @@ class Eoptimization:
         self.ExogFut = self.ExogFut.asfreq('H', fill_value=0.0).sort_index()
         self.ExogFut['weekday'] = self.ExogFut.index.weekday
         self.ExogFut['hour'] = self.ExogFut.index.hour
-        self.ExogFut['holiday']=0   
+ 
         #add for temperature if needed 
         if temp==1:
             self.ExogFut = self.ExogFut.join(self.TempForecast, how='left')
+        self.ExogFut['holiday']=0  
 
     #forecast energy consumption
     def forecastEdata(self,backtest=0,plot=0):
@@ -187,7 +193,7 @@ class Eoptimization:
                         lags          = [1, 2, 3, 23, 24, 25, 47, 48, 49],
                         transformer_y = StandardScaler()
                     )
-        exog = [col for col in self.edata.columns if col.startswith(('weekday', 'hour','holiday'))] #add temperature if needed
+        exog = [col for col in self.edata.columns if col.startswith(('weekday', 'hour','temperature','holiday'))] #add temperature if needed
         end_forecast=(datetime.today().replace(minute=0, second=0, microsecond=0)+timedelta(hours=-1)).strftime("%Y/%m/%d, %H:%M:%S")
         forecaster.fit(y=self.edata.loc[begin_data:end_data, 'consumption'], exog=self.edata.loc[begin_data:end_data, exog])
         self.Eforecast=forecaster.predict(35,self.edata.loc[:end_forecast, 'consumption'],exog=self.ExogFut)
@@ -630,9 +636,9 @@ class Eoptimization:
     def getfromInflux(self,value):
         if self.influxconfig['influxdb_version'] == 1:
             if value == 'edata':
-                return self.influxclient.query('SELECT integral("value",1h)/ 1000 as consumption, time as time from "W" WHERE "entity_id"=\''+self.influxconfig['energy_demand_sensor']+'\' and time <= now() and time >= now() - 365d GROUP BY time(1h)')['W']
+                return self.influxclient.query('SELECT integral("value",1h)/ 1000 as consumption, time as time from "W" WHERE "entity_id"=\''+self.influxconfig['energy_demand_sensor']+'\' and time <= now() and time >= now() - 61d GROUP BY time(1h)')['W']
             elif value == 'tdata':
-                return self.influxclient.query('SELECT mean("value") as temperature, time as time from "°C" WHERE "entity_id"=\''+self.influxconfig['outside_temperature_sensor']+'\' and time <= now() and time >= now() - 365d GROUP BY time(1h)')['°C']
+                return self.influxclient.query('SELECT max("value") as temperature, time as time from "°C" WHERE "entity_id"=\''+self.influxconfig['outside_temperature_sensor']+'\' and time <= now() and time >= now() - 61d GROUP BY time(1d)')['°C']
             elif value == 'consumption':
                 return self.influxclient.query('SELECT integral("value",1h)/ 1000 as Consumption, time as time from "W" WHERE "entity_id"=\''+self.config['Sensors']['Consumption']+'\' and time <= now() and time >= now() - 2d GROUP BY time(1h)')['W']
             elif value == 'PV':
