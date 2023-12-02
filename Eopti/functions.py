@@ -263,17 +263,20 @@ class Eoptimization:
         count1=0
         count2=0
         result = requests.get('https://energie.theoxygent.nl/api/prices.php').json()
-        for row in result[1]:
-            rowdate=datetime.fromtimestamp(row['x']*100).date() 
-            if rowdate == datetime.today().date()+timedelta(days=1):
-                tomorrow+=row['y']
-                count1+=1
-            if rowdate == datetime.today().date()+timedelta(days=2):
-                dayaftertomorrow+=row['y']
-                count2+=1
-        ptom=tomorrow/count1
-        pdat=dayaftertomorrow/count2
-        self.dayondayprice=pdat/ptom
+        try:                
+            for row in result[1]:
+                rowdate=datetime.fromtimestamp(row['x']*100).date() 
+                if rowdate == datetime.today().date()+timedelta(days=1):
+                    tomorrow+=row['y']
+                    count1+=1
+                if rowdate == datetime.today().date()+timedelta(days=2):
+                    dayaftertomorrow+=row['y']
+                    count2+=1
+            ptom=tomorrow/count1
+            pdat=dayaftertomorrow/count2
+            self.dayondayprice=pdat/ptom
+        except:
+            self.dayondayprice=0.9
         
     #fixSOC makes sure SOC stays relatively similar over a run (influence by SOCslack in conf), fixSOCt and SOCtarget assume SOC needs to be at a certain target. smartSOC uses forecast for prices to determine high or low SOC at the end of run    
     def createOptimization(self,fixSOC=0,fixSOCt=0, SOCtarget=0.0,smartSOC=0):
