@@ -109,9 +109,9 @@ class Eoptimization:
         self.TempForecast.index=self.TempForecast.index.normalize()
         self.TempForecast=self.TempForecast.asfreq('H', method='ffill').sort_index()
         try:
-            self.TempForecast.index = self.TempForecast.index.tz_localize(self.influxconfig['timezone'], ambiguous='infer')
+            self.TempForecast.index = self.TempForecast.index.tz_localize(self.influxconfig['timezone'], ambiguous='infer',nonexistent='shift_forward')
         except:
-            self.TempForecast.index = self.TempForecast.index.tz_localize(self.influxconfig['timezone'], ambiguous=True)
+            self.TempForecast.index = self.TempForecast.index.tz_localize(self.influxconfig['timezone'], ambiguous=True,nonexistent='shift_forward')
 
 
 
